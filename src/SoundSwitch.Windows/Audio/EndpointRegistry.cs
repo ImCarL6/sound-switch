@@ -46,6 +46,13 @@ internal sealed class EndpointRegistry : IDisposable
         get { RefreshIfDirty(); return devices.Values; }
     }
 
+    /// <summary>ID do dispositivo de saída padrão para o papel Multimídia, ou null.</summary>
+    public string? DefaultRenderId()
+    {
+        if (!enumerator.TryGetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia, out var dev) || dev is null) return null;
+        using (dev) return dev.ID;
+    }
+
     /// <summary>Muda a cada recarga: objetos derivados dos MMDevice antigos ficam inválidos.</summary>
     public int Version { get; private set; }
 

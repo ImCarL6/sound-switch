@@ -6,6 +6,7 @@ using SoundSwitch.Core.Feedback;
 using SoundSwitch.Core.Focus;
 using SoundSwitch.Core.Mapping;
 using SoundSwitch.Core.Routing;
+using SoundSwitch.Core.Switching;
 using SoundSwitch.Windows.Diagnostics;
 
 namespace SoundSwitch.Windows.Audio;
@@ -36,7 +37,6 @@ public sealed class VolumeEngine : IDisposable
     EndpointRegistry? registry;
     SessionVolumeService? sessions;
     volatile FocusedApp? focused;
-    readonly HashSet<string> warnedOnce = new();
 
     /// <summary>Feedback para o overlay. Chamado na thread do worker: não bloquear.</summary>
     public event Action<FeedbackState>? Feedback;
@@ -126,7 +126,7 @@ public sealed class VolumeEngine : IDisposable
                 if (raw >= 0) Safe($"controle \"{s.Config.Controls[i].Name}\"", () => ApplyFader(s.Config, s.Config.Controls[i], raw));
             }
 
-            while (buttons.TryDequeue(out var b)) Safe($"botão \"{b.Control.Name}\"", () => ApplyButton(b.Control));
+            while (buttons.TryDequeue(out var b)) Safe($"botão \"{b.Control.Name}\"", () => ApplyButton(s.Config, b.Control));
         }
 
         sessions.Dispose();
@@ -242,15 +242,45 @@ public sealed class VolumeEngine : IDisposable
         }
     }
 
-    void ApplyButton(ControlConfig control)
+    void ApplyButton(AppConfig cfg, ControlConfig control)
     {
-        WarnOnce("button", "Botão de troca de saída recebido — chega na Fase 3.");
-        Feedback?.Invoke(new FeedbackState(FeedbackKind.Unavailable, "Troca de saída", Detail: "em breve (Fase 3)"));
-    }
+        if (control.Action != ControlActions.CycleDefaultDevice) return;
 
-    void WarnOnce(string key, string message)
-    {
-        if (warnedOnce.Add(key)) Log.Info(message);
+        var entries = new List<CycleEntry>();
+        var labels = new List<string>();
+        foreach (var key in control.Cycle)
+        {
+            var target = cfg.Devices[key];
+            var match = ResolveAndLearn(key, target);
+            entries.Add(new CycleEntry(key, match?.Endpoint.Id));
+            labels.Add(DeviceMatcher.DisplayLabel(target, match?.Endpoint));
+        }
+
+        string? current = registry!.DefaultRenderId();
+        var result = DeviceCycle.Next(entries, current);
+
+        switch (result.Outcome)
+        {
+            case CycleOutcome.NoneAvailable:
+                Log.Warn("Troca de saída: nenhum dispositivo do ciclo está conectado.");
+                Feedback?.Invoke(new FeedbackState(FeedbackKind.Unavailable, "Troca de saída", Detail: "nenhuma saída do ciclo conectada"));
+                return;
+
+            case CycleOutcome.OnlyOption:
+                Log.Info($"Troca de saída: \"{labels[result.Index]}\" é a única saída do ciclo conectada.");
+                Feedback?.Invoke(new FeedbackState(FeedbackKind.DeviceSwitch, $"Saída: {labels[result.Index]}",
+                    Detail: "única saída disponível"));
+                return;
+        }
+
+        var roles = control.Roles.Select(DefaultDeviceService.ParseRole).ToList();
+        DefaultDeviceService.SetDefault(entries[result.Index].EndpointId!, roles);
+        sessions?.Invalidate(); // apps tendem a recriar as sessões no dispositivo novo
+        Log.Info($"Troca de saída: padrão ({string.Join("+", control.Roles)}) → \"{labels[result.Index]}\".");
+
+        var list = string.Join("     ", entries.Select((e, i) =>
+            $"{(i == result.Index ? "●" : "○")} {labels[i]}{(e.EndpointId is null ? " (desconectado)" : "")}"));
+        Feedback?.Invoke(new FeedbackState(FeedbackKind.DeviceSwitch, $"Saída: {labels[result.Index]}", Detail: list));
     }
 
     static void Safe(string what, Action action)

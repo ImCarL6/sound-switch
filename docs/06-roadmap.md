@@ -68,11 +68,20 @@ Ainda não testado: Discord, um jogo, app UWP com `ApplicationFrameHost` e o est
 
 ## Fase 3 — Troca de dispositivo
 
-- [ ] Interop `IPolicyConfig` + `DefaultDeviceService` (console + multimídia).
-- [ ] `DeviceCycle` + testes (pular desconectado, padrão fora da lista, lista com 1 item).
-- [ ] Debounce do botão; overlay "Saída: …".
+- [x] Interop `IPolicyConfig` + `DefaultDeviceService` (console + multimídia).
+- [x] `DeviceCycle` + testes (pular desconectado, padrão fora da lista, lista com 1 item).
+- [x] Debounce do botão; overlay "Saída: …".
 - **Aceite:** botão alterna EDIFIER ⇄ Fones de ouvido; com o EDIFIER desplugado o botão mantém/força
   Fones de ouvido; AI Noise-Canceling Speaker nunca é escolhido.
+
+**Fase 3 aceita em 05/11/2026.** Interop validado antes, redefinindo o padrão atual como padrão
+(chamada passou e nada mudou). No teste com o botão: EDIFIER → Fones de ouvido → EDIFIER. Estado final
+conferido no Windows: Console e Multimídia no EDIFIER (último valor aplicado), Comunicação intacta.
+Sem avisos nem erros. Ainda não testado na prática: EDIFIER desplugado (coberto só pelos testes do
+`DeviceCycle`). Apertos filtrados pelo debounce não aparecem no log, então o teste de apertos rápidos
+não pôde ser conferido por ele.
+
+Com as Fases 1–3, o app cobre o fluxo inteiro: SoundSwitch, Bome e MIDI Mixer já podem ficar fechados.
 
 ## Fase 4 — Uso diário e migração
 
