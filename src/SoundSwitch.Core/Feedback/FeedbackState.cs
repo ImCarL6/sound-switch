@@ -14,4 +14,5 @@ public enum FeedbackKind
 }
 
 /// <summary>O que o overlay deve mostrar. Produzido pelo worker de áudio, consumido pela UI.</summary>
-public sealed record FeedbackState(FeedbackKind Kind, string Label, int? Percent = null, bool Muted = false, string? Detail = null);
+/// <param name="IconPath">Executável cujo ícone o overlay mostra (fader do app em foco).</param>
+public sealed record FeedbackState(FeedbackKind Kind, string Label, int? Percent = null, bool Muted = false, string? Detail = null, string? IconPath = null);

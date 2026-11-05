@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using SoundSwitch.Core.Config;
 using SoundSwitch.Core.Devices;
 using SoundSwitch.Core.Feedback;
+using SoundSwitch.Core.Focus;
 using SoundSwitch.Core.Mapping;
 using SoundSwitch.Core.Routing;
 using SoundSwitch.Windows.Diagnostics;
@@ -33,6 +34,8 @@ public sealed class VolumeEngine : IDisposable
     volatile State? state;
     volatile bool stopping;
     EndpointRegistry? registry;
+    SessionVolumeService? sessions;
+    volatile FocusedApp? focused;
     readonly HashSet<string> warnedOnce = new();
 
     /// <summary>Feedback para o overlay. Chamado na thread do worker: não bloquear.</summary>
@@ -98,6 +101,7 @@ public sealed class VolumeEngine : IDisposable
         try
         {
             registry = new EndpointRegistry();
+            sessions = new SessionVolumeService(registry);
         }
         catch (Exception ex)
         {
@@ -125,6 +129,7 @@ public sealed class VolumeEngine : IDisposable
             while (buttons.TryDequeue(out var b)) Safe($"botão \"{b.Control.Name}\"", () => ApplyButton(b.Control));
         }
 
+        sessions.Dispose();
         registry.Dispose();
     }
 
@@ -137,10 +142,37 @@ public sealed class VolumeEngine : IDisposable
                 ApplyDeviceVolume(cfg, control, raw, level);
                 break;
             case ControlActions.FocusVolume:
-                WarnOnce("focus", "Fader do app em foco recebido — chega na Fase 2.");
-                Feedback?.Invoke(new FeedbackState(FeedbackKind.Unavailable, "App em foco", level.Percent, level.Mute, "em breve (Fase 2)"));
+                ApplyFocusVolume(raw, level);
                 break;
         }
+    }
+
+    void ApplyFocusVolume(int raw, VolumeLevel level)
+    {
+        var app = focused;
+        if (app is null)
+        {
+            Feedback?.Invoke(new FeedbackState(FeedbackKind.Unavailable, "App em foco", Detail: "nenhuma janela em foco"));
+            return;
+        }
+
+        int count = sessions!.Apply(app, level);
+        if (count == 0)
+        {
+            Feedback?.Invoke(new FeedbackState(FeedbackKind.Unavailable, app.DisplayName, Detail: "sem áudio", IconPath: app.ExePath));
+            return;
+        }
+
+        Log.Debug($"Volume foco {app.DisplayName}: raw {raw} → {level.Percent}%{(level.Mute ? " (mudo)" : "")} em {count} sessão(ões)");
+        Feedback?.Invoke(new FeedbackState(FeedbackKind.FocusVolume, app.DisplayName, level.Percent, level.Mute, IconPath: app.ExePath));
+    }
+
+    /// <summary>Chamado pela UI quando o app em foco muda. Não aplica volume (RF3.5).</summary>
+    public void SetFocusedApp(FocusedApp app)
+    {
+        focused = app;
+        work.Enqueue(() => sessions?.Invalidate());
+        signal.Set();
     }
 
     void ApplyDeviceVolume(AppConfig cfg, ControlConfig control, int raw, VolumeLevel level)

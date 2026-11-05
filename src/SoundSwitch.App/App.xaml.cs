@@ -4,6 +4,7 @@ using SoundSwitch.Core.Config;
 using SoundSwitch.Core.Routing;
 using SoundSwitch.Windows.Audio;
 using SoundSwitch.Windows.Diagnostics;
+using SoundSwitch.Windows.Focus;
 using SoundSwitch.Windows.Midi;
 
 namespace SoundSwitch.App;
@@ -20,6 +21,7 @@ public partial class App : Application
     OverlayWindow? overlay;
     VolumeEngine? engine;
     MidiInputService? midi;
+    ForegroundTracker? focus;
     volatile MidiRouter? router;
     AppConfig? current;
 
@@ -52,6 +54,11 @@ public partial class App : Application
         engine = new VolumeEngine();
         engine.Feedback += s => overlay.Push(s);
         engine.KnownIdLearned += (key, id) => Dispatcher.BeginInvoke(() => store.AddKnownId(key, id));
+
+        // Precisa da thread de UI (loop de mensagens) para receber os eventos de foco.
+        focus = new ForegroundTracker();
+        focus.Changed += app => engine.SetFocusedApp(app);
+        if (focus.Current is { } startApp) engine.SetFocusedApp(startApp);
 
         var initial = store.Load();
         OnConfig(initial, manual: false);
@@ -106,6 +113,7 @@ public partial class App : Application
     {
         SystemEvents.PowerModeChanged -= OnPowerModeChanged;
         midi?.Dispose();
+        focus?.Dispose();
         engine?.Dispose();
         store?.Dispose();
         tray?.Dispose();

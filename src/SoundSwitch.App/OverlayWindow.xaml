@@ -23,6 +23,8 @@
 
             <TextBlock x:Name="Glyph" Grid.Column="0" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                        FontSize="16" VerticalAlignment="Center" Margin="0,0,10,0" />
+            <Image x:Name="AppIcon" Grid.Column="0" Width="18" Height="18" VerticalAlignment="Center"
+                   Margin="0,0,10,0" Visibility="Collapsed" RenderOptions.BitmapScalingMode="HighQuality" />
             <TextBlock x:Name="LabelText" Grid.Column="1" FontFamily="Segoe UI Variable Text, Segoe UI"
                        FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
             <TextBlock x:Name="ValueText" Grid.Column="2" FontFamily="Segoe UI Variable Text, Segoe UI"

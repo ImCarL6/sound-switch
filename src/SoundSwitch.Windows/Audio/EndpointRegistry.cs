@@ -40,10 +40,20 @@ internal sealed class EndpointRegistry : IDisposable
         return devices.GetValueOrDefault(id);
     }
 
+    /// <summary>Todos os endpoints de saída ativos (para enumerar sessões de áudio).</summary>
+    public IReadOnlyCollection<MMDevice> ActiveDevices
+    {
+        get { RefreshIfDirty(); return devices.Values; }
+    }
+
+    /// <summary>Muda a cada recarga: objetos derivados dos MMDevice antigos ficam inválidos.</summary>
+    public int Version { get; private set; }
+
     void RefreshIfDirty()
     {
         if (!dirty) return;
         dirty = false;
+        Version++;
 
         foreach (var d in devices.Values) d.Dispose();
         devices.Clear();

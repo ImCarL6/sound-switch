@@ -53,11 +53,18 @@ Ainda não testado: desplugar/replugar o BK492 e o EDIFIER com o app aberto, e s
 
 ## Fase 2 — App em foco
 
-- [ ] `ForegroundTracker` (WinEvent hook, UWP, ignorar a própria janela).
-- [ ] `SessionVolumeService` (todas as saídas, casamento por PID/exe/árvore, cache).
-- [ ] Overlay com ícone e nome do app, estado "sem áudio".
+- [x] `ForegroundTracker` (WinEvent hook, UWP, ignorar a própria janela).
+- [x] `SessionVolumeService` (todas as saídas, casamento por PID/exe/árvore via `SessionMatcher` no Core,
+      cache de 500 ms refeito ao trocar de foco ou de dispositivos).
+- [x] Overlay com ícone e nome do app, estado "sem áudio".
 - **Aceite:** Spotify, Chrome (aba com vídeo), Discord, um jogo e o player de vídeo do Windows.
   Conferir no Mixer de Volume do Windows que só o app em foco muda.
+
+**Fase 2 aceita em 05/11/2026** com Spotify e Chrome: 509 valores aplicados (301 no Spotify, 208 no Chrome),
+todos iguais à fórmula. O Chrome foi achado pelo processo de áudio filho (pid diferente do da janela, mesmo exe).
+Estado final conferido no Windows: Spotify em 0,18 (último valor aplicado, 18%), Chrome em 1,00 (100%) e as
+outras sessões (svchost, mstsc) intactas. Sem avisos nem erros no log.
+Ainda não testado: Discord, um jogo, app UWP com `ApplicationFrameHost` e o estado "sem áudio".
 
 ## Fase 3 — Troca de dispositivo
 

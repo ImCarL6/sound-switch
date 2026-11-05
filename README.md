@@ -9,8 +9,8 @@ substituindo três programas que hoje fazem esse trabalho juntos:
 | Bome's MIDI Translator Classic 1.61 | Botão MIDI (CC20) → simula Ctrl+Alt+S | Desnecessário: o botão aciona a troca direto |
 | SoundSwitch 7.3.3 | Ctrl+Alt+S → alterna dispositivo padrão | Troca de dispositivo padrão via API do Windows |
 
-**Status:** Fase 1 concluída — faders 1 e 3 controlam EDIFIER e Fones de ouvido com overlay.
-Próximo passo: Fase 2 (fader do app em foco).
+**Status:** Fases 1 e 2 concluídas — os três faders funcionam (EDIFIER, app em foco, Fones de ouvido)
+com overlay. Próximo passo: Fase 3 (botão de troca de saída).
 
 ## Rodar
 

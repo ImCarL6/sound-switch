@@ -60,6 +60,13 @@ public partial class OverlayWindow : Window
             FeedbackKind.FocusVolume => s.Muted ? GlyphMute : GlyphApp,
             _ => s.Muted ? GlyphMute : GlyphVolume,
         };
+        // Ícone do executável no lugar do glifo (fader do app em foco), se der para extrair.
+        var icon = s.IconPath is not null && !s.Muted ? AppIconFor(s.IconPath) : null;
+        AppIcon.Source = icon;
+        AppIcon.Opacity = s.Kind == FeedbackKind.Unavailable ? 0.5 : 1;
+        AppIcon.Visibility = icon is null ? Visibility.Collapsed : Visibility.Visible;
+        Glyph.Visibility = icon is null ? Visibility.Visible : Visibility.Collapsed;
+
         ValueText.Text = hasBar ? (s.Muted ? "Mudo" : $"{s.Percent}%") : "";
         BarTrackHost.Visibility = hasBar ? Visibility.Visible : Visibility.Collapsed;
         DetailText.Visibility = hasBar ? Visibility.Collapsed : Visibility.Visible;
@@ -78,6 +85,26 @@ public partial class OverlayWindow : Window
         hideTimer.Stop();
         hideTimer.Interval = TimeSpan.FromMilliseconds(s.Kind == FeedbackKind.DeviceSwitch ? config.DeviceSwitchHideAfterMs : config.HideAfterMs);
         hideTimer.Start();
+    }
+
+    readonly Dictionary<string, ImageSource?> iconCache = new(StringComparer.OrdinalIgnoreCase);
+
+    ImageSource? AppIconFor(string exePath)
+    {
+        if (iconCache.TryGetValue(exePath, out var cachedIcon)) return cachedIcon;
+        ImageSource? img = null;
+        try
+        {
+            using var ico = System.Drawing.Icon.ExtractAssociatedIcon(exePath);
+            if (ico is not null)
+            {
+                var bmp = Imaging.CreateBitmapSourceFromHIcon(ico.Handle, Int32Rect.Empty, System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+                bmp.Freeze();
+                img = bmp;
+            }
+        }
+        catch { /* sem ícone: usa o glifo */ }
+        return iconCache[exePath] = img;
     }
 
     void FadeOut()
