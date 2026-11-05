@@ -1,0 +1,24 @@
+Captura 20261105-142220 — entrada "BK492"
+══ Resumo (249 s de captura) ══
+
+■ ch1 CC 20  — Botão → troca de saída
+  mensagens: 6   pico: 4/s   faixa real: 0 … 127
+  valores: 0 (×3), 127 (×3)
+
+■ ch1 CC 28  — Fader 3 → Fones de ouvido
+  mensagens: 191   pico: 23/s   faixa real: 0 … 127
+  chega a 0? sim   chega a 127? sim   valores distintos: 123/128
+  valores pulados dentro da faixa (5): 7, 11, 77, 99, 103
+  inversões de direção: 1   mudanças de ±1 após repouso (suspeita de jitter): 3
+
+■ ch1 CC 82  — Fader 1 → EDIFIER
+  mensagens: 145   pico: 47/s   faixa real: 0 … 127
+  chega a 0? sim   chega a 127? sim   valores distintos: 108/128
+  valores pulados dentro da faixa (20): 1, 33, 42, 49, 68, 75, 83, 91, 94, 97, 100, 103, 106, 108, 111, 113, 116, 119, 123–124
+  inversões de direção: 1   mudanças de ±1 após repouso (suspeita de jitter): 0
+
+■ ch1 CC 83  — Fader 2 → app em foco
+  mensagens: 177   pico: 35/s   faixa real: 0 … 127
+  chega a 0? sim   chega a 127? sim   valores distintos: 120/128
+  valores pulados dentro da faixa (8): 16, 26, 30, 52, 80, 92, 103, 106
+  inversões de direção: 1   mudanças de ±1 após repouso (suspeita de jitter): 1

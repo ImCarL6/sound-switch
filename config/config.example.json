@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+
+  "midi": {
+    "inputName": "BK492",
+    "channel": 1
+  },
+
+  "devices": {
+    "edifier": {
+      "label": "EDIFIER",
+      "match": { "name": "EDIFIER", "adapter": "CS43131+SGM8262 HIFI Audio" },
+      "knownIds": [
+        "{0.0.0.00000000}.{95fe9aea-8956-4280-9634-89675f289bec}"
+      ]
+    },
+    "fones": {
+      "label": "Fones de ouvido",
+      "match": { "name": "Fones de ouvido", "adapter": "Realtek(R) Audio" },
+      "knownIds": [
+        "{0.0.0.00000000}.{079f7cf6-1c5d-437f-bf1a-efb781a24f05}"
+      ]
+    }
+  },
+
+  "controls": [
+    {
+      "name": "Fader 1",
+      "cc": 82,
+      "type": "fader",
+      "action": "deviceVolume",
+      "device": "edifier",
+      "calibration": { "min": 0, "max": 127, "points": [] },
+      "jitterFilter": 0
+    },
+    {
+      "name": "Fader 2",
+      "cc": 83,
+      "type": "fader",
+      "action": "focusVolume",
+      "calibration": { "min": 0, "max": 127, "points": [] },
+      "jitterFilter": 0
+    },
+    {
+      "name": "Fader 3",
+      "cc": 28,
+      "type": "fader",
+      "action": "deviceVolume",
+      "device": "fones",
+      "calibration": { "min": 0, "max": 127, "points": [] },
+      "jitterFilter": 0
+    },
+    {
+      "name": "Botão troca de saída",
+      "cc": 20,
+      "type": "button",
+      "action": "cycleDefaultDevice",
+      "triggerValue": 127,
+      "debounceMs": 250,
+      "cycle": ["edifier", "fones"],
+      "roles": ["console", "multimedia"]
+    }
+  ],
+
+  "overlay": {
+    "enabled": true,
+    "position": "top-left",
+    "margin": 16,
+    "hideAfterMs": 1500,
+    "deviceSwitchHideAfterMs": 2000,
+    "theme": "dark",
+    "monitor": "primary"
+  },
+
+  "app": {
+    "startWithWindows": true,
+    "logLevel": "Information"
+  }
+}

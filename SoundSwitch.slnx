@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SoundSwitch.App/SoundSwitch.App.csproj" />
+    <Project Path="src/SoundSwitch.Core/SoundSwitch.Core.csproj" />
+    <Project Path="src/SoundSwitch.Windows/SoundSwitch.Windows.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SoundSwitch.Core.Tests/SoundSwitch.Core.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/MidiMonitor/MidiMonitor.csproj" />
+  </Folder>
+</Solution>
