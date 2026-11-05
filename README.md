@@ -62,7 +62,8 @@ Exemplo de config com o setup atual: [config/config.example.json](config/config.
 
 ## Stack
 
-C# / .NET 10 (`net10.0-windows`), WPF, NAudio (Wasapi + Midi), xUnit. Requer só o .NET SDK 10 (já instalado).
+C# / .NET 10 (`net10.0-windows`), WPF, NAudio.Wasapi (Core Audio), WinMM direto para MIDI, xUnit.
+Para compilar: .NET SDK 10. O executável publicado não precisa de nada instalado.
 
 ## Decisões em aberto
 
@@ -70,3 +71,7 @@ C# / .NET 10 (`net10.0-windows`), WPF, NAudio (Wasapi + Midi), xUnit. Requer só
   colidir com o SoundSwitch original).
 - **Fader do app em foco ao trocar de janela.** Padrão: não aplica nada até o fader se mover (igual ao
   MIDI Mixer). "Soft takeover" fica como extra.
+
+## Licença
+
+[MIT](LICENSE) © 2026 Carlos Aparecido.
