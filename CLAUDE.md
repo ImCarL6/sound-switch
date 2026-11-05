@@ -13,5 +13,7 @@ e trocar a saída de áudio padrão. Substitui MIDI Mixer + SoundSwitch + Bome's
   - O overlay nunca pode receber foco (WS_EX_NOACTIVATE) — senão o fader do "app em foco" quebra.
   - Troca de saída altera só os papéis Console e Multimídia.
 - Lógica pura fica em `SoundSwitch.Core` e tem testes xUnit; nada de COM/Win32 lá.
-- Build/test: `dotnet build`, `dotnet test` (quando a solução existir).
+- Build/test: `dotnet build`, `dotnet test`. Instalar a versão nova: `scripts/publish.ps1` (fecha a cópia
+  em execução, instala em `%LOCALAPPDATA%\Programs\sound-switch` e reabre). O usuário depende do app no
+  dia a dia: só publicar com os testes passando.
 - Não existe hardware em CI: tudo que depende de BK492/áudio é validado pelo checklist manual do roadmap.

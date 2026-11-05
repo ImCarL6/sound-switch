@@ -74,6 +74,22 @@ internal sealed class ConfigStore : IDisposable
         }
     }
 
+    /// <summary>Grava app.startWithWindows; o watcher recarrega e o app aplica.</summary>
+    public void SetStartWithWindows(bool enabled)
+    {
+        try
+        {
+            var updated = ConfigLoader.SetStartWithWindows(ReadShared(FilePath), enabled);
+            if (updated is null) return;
+            File.WriteAllText(FilePath, updated);
+            Log.Info($"Config: app.startWithWindows = {enabled.ToString().ToLowerInvariant()}.");
+        }
+        catch (Exception ex)
+        {
+            Log.Warn($"Config: não consegui gravar startWithWindows: {ex.Message}");
+        }
+    }
+
     static string ReadShared(string path)
     {
         // Editores às vezes seguram o arquivo por um instante ao salvar.

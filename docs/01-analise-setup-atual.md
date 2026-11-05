@@ -1,7 +1,10 @@
 # 01 — Análise do setup atual
 
 Levantamento feito em 05/11/2026 direto no PC (arquivos de config, registro do Windows, logs e
-APIs de áudio/MIDI). Este documento é a "fonte da verdade" do comportamento que o novo app precisa
+APIs de áudio/MIDI).
+
+> **Registro histórico.** Os três apps foram desinstalados e seus restos removidos no mesmo dia; os
+> caminhos citados abaixo não existem mais. O comportamento descrito aqui é o que o sound-switch reproduz. Este documento é a "fonte da verdade" do comportamento que o novo app precisa
 reproduzir.
 
 ## Visão geral do fluxo atual

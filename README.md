@@ -9,11 +9,19 @@ substituindo três programas que hoje fazem esse trabalho juntos:
 | Bome's MIDI Translator Classic 1.61 | Botão MIDI (CC20) → simula Ctrl+Alt+S | Desnecessário: o botão aciona a troca direto |
 | SoundSwitch 7.3.3 | Ctrl+Alt+S → alterna dispositivo padrão | Troca de dispositivo padrão via API do Windows |
 
-**Status:** Fases 1–3 concluídas — os três faders e o botão de troca de saída funcionam, com overlay.
-O app já substitui MIDI Mixer, SoundSwitch e Bome. Próximo passo: Fase 4 (iniciar com o Windows,
-executável publicado, migração).
+**Status:** em uso diário. Os três faders e o botão de troca de saída funcionam, com overlay; o app está
+instalado, inicia com o Windows e substituiu MIDI Mixer, SoundSwitch e Bome (desinstalados).
 
-## Rodar
+## Instalar / atualizar
+
+```bash
+powershell -ExecutionPolicy Bypass -File scripts/publish.ps1
+```
+
+Roda os testes, gera um `.exe` único (autocontido) em `%LOCALAPPDATA%\Programs\sound-switch`, troca a cópia
+em execução e registra a inicialização com o Windows (desligável na bandeja ou em `app.startWithWindows`).
+
+Para desenvolver sem mexer na cópia instalada (feche-a antes pela bandeja → Sair):
 
 ```bash
 dotnet run --project src/SoundSwitch.App

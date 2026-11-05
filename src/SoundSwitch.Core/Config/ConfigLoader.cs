@@ -120,17 +120,32 @@ public static class ConfigLoader
         }
     }
 
+    /// <summary>Define app.startWithWindows no texto JSON. Retorna null se já estava com esse valor.</summary>
+    public static string? SetStartWithWindows(string json, bool enabled)
+    {
+        var root = ParseNode(json);
+        if (root is null) return null;
+        if (root["app"] is not JsonObject app) root["app"] = app = new JsonObject();
+        var key = app.Select(kv => kv.Key).FirstOrDefault(k => k.Equals("startWithWindows", StringComparison.OrdinalIgnoreCase)) ?? "startWithWindows";
+        if (app[key] is JsonValue v && v.TryGetValue<bool>(out var cur) && cur == enabled) return null;
+        app[key] = enabled;
+        return root.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
+    }
+
+    static JsonObject? ParseNode(string json) =>
+        JsonNode.Parse(json, documentOptions: new JsonDocumentOptions
+        {
+            CommentHandling = JsonCommentHandling.Skip,
+            AllowTrailingCommas = true,
+        }) as JsonObject;
+
     /// <summary>
     /// Acrescenta um ID em devices.&lt;key&gt;.knownIds no texto JSON, preservando o resto do arquivo
     /// (exceto comentários, que o JsonNode não preserva). Retorna null se o ID já estava lá.
     /// </summary>
     public static string? AddKnownId(string json, string deviceKey, string endpointId)
     {
-        var root = JsonNode.Parse(json, documentOptions: new JsonDocumentOptions
-        {
-            CommentHandling = JsonCommentHandling.Skip,
-            AllowTrailingCommas = true,
-        }) as JsonObject;
+        var root = ParseNode(json);
         if (root?["devices"] is not JsonObject devices) return null;
 
         var dev = devices.FirstOrDefault(kv => string.Equals(kv.Key, deviceKey, StringComparison.OrdinalIgnoreCase)).Value as JsonObject;

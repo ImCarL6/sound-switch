@@ -12,9 +12,13 @@ internal sealed class TrayIcon : IDisposable
     readonly Forms.NotifyIcon icon;
     readonly Forms.ToolStripMenuItem midiStatus = new("MIDI: procurando…") { Enabled = false };
     readonly Forms.ToolStripMenuItem configStatus = new("Config: —") { Enabled = false };
+    readonly Forms.ToolStripMenuItem autoStart = new("Iniciar com o Windows") { CheckOnClick = false };
     readonly Icon image;
 
     public event Action? ReloadRequested;
+
+    /// <summary>Usuário clicou em "Iniciar com o Windows": valor desejado.</summary>
+    public event Action<bool>? AutoStartToggled;
     public event Action? ExitRequested;
 
     public TrayIcon(string configPath, string logDir)
@@ -24,6 +28,9 @@ internal sealed class TrayIcon : IDisposable
         menu.Items.Add(new Forms.ToolStripMenuItem("sound-switch") { Enabled = false, Font = new Font(Forms.Control.DefaultFont, System.Drawing.FontStyle.Bold) });
         menu.Items.Add(midiStatus);
         menu.Items.Add(configStatus);
+        menu.Items.Add(new Forms.ToolStripSeparator());
+        autoStart.Click += (_, _) => AutoStartToggled?.Invoke(!autoStart.Checked);
+        menu.Items.Add(autoStart);
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add("Abrir config", null, (_, _) => Open(configPath));
         menu.Items.Add("Recarregar config", null, (_, _) => ReloadRequested?.Invoke());
@@ -42,6 +49,12 @@ internal sealed class TrayIcon : IDisposable
     }
 
     public void SetConfigStatus(string text) => configStatus.Text = Trim(text, 120);
+
+    public void SetAutoStart(bool enabled, string tooltip)
+    {
+        autoStart.Checked = enabled;
+        autoStart.ToolTipText = tooltip;
+    }
 
     public void ShowError(string title, string text) =>
         icon.ShowBalloonTip(5000, title, Trim(text, 250), Forms.ToolTipIcon.Error);

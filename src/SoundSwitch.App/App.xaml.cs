@@ -48,6 +48,7 @@ public partial class App : Application
         tray = new TrayIcon(ConfigStore.FilePath, ConfigStore.LogDir);
         tray.ExitRequested += () => Shutdown();
         tray.ReloadRequested += () => OnConfig(store.Load(), manual: true);
+        tray.AutoStartToggled += enabled => store.SetStartWithWindows(enabled);
 
         overlay = new OverlayWindow();
 
@@ -97,6 +98,7 @@ public partial class App : Application
         overlay?.Configure(current.Overlay);
         midi?.SetInputName(current.Midi.InputName);
         tray?.SetConfigStatus($"Config: ok ({current.Controls.Count} controles)");
+        tray?.SetAutoStart(current.App.StartWithWindows, AutoStart.Apply(current.App.StartWithWindows));
         Log.Info($"Config {(manual ? "recarregado manualmente" : "carregado")}: " +
                  string.Join(", ", current.Controls.Select(c => $"CC{c.Cc}→{c.Action}{(c.Device is null ? "" : ":" + c.Device)}")));
     }

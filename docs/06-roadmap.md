@@ -85,16 +85,23 @@ Com as Fases 1–3, o app cobre o fluxo inteiro: SoundSwitch, Bome e MIDI Mixer 
 
 ## Fase 4 — Uso diário e migração
 
-- [ ] Bandeja (pausar, recarregar config, abrir config/logs, sair), instância única, autostart.
-- [ ] Log rotativo; tratamento de erros (nenhuma exceção derruba o app).
-- [ ] Tela de monitor MIDI e assistente de calibração dentro do app.
-- [ ] Publicar `win-x64` single-file.
-- [ ] **Migração:**
-  1. Rodar o app novo junto com os antigos por 1–2 dias, com o MIDI Mixer pausado (desmarcar o
-     perfil) para não brigar pelo volume.
-  2. Desligar "iniciar com o Windows" no MIDI Mixer (`startOnBoot`), no SoundSwitch e no Bome.
-  3. Fechar os três e usar só o app novo por uma semana.
-  4. Desinstalar (opcional). Os configs antigos ficam documentados em [01](01-analise-setup-atual.md).
+- [x] Bandeja (recarregar config, abrir config/logs, iniciar com o Windows, sair), instância única.
+- [ ] Bandeja: item "Pausar/Retomar".
+- [x] Iniciar com o Windows: `HKCU\...\Run\sound-switch`, controlado por `app.startWithWindows` ou pela
+      bandeja. Builds de desenvolvimento (`bin\Debug`/`bin\Release`) nunca se registram.
+- [x] Log diário com os últimos 7 arquivos; exceções da UI e dos workers são logadas sem derrubar o app.
+- [ ] Tela de monitor MIDI e assistente de calibração dentro do app (hoje: `tools/MidiMonitor`; a
+      medição mostrou que a calibração não é necessária para o BK492).
+- [x] Publicar `win-x64` single-file: `scripts/publish.ps1` roda os testes, publica autocontido
+      (~72 MB, não depende do .NET instalado) e instala em `%LOCALAPPDATA%\Programs\sound-switch`.
+- [x] **Migração** (05/11/2026): o usuário desinstalou MIDI Mixer, SoundSwitch e Bome depois da Fase 3,
+      sem o período de convivência. Os configs antigos ficam documentados em [01](01-analise-setup-atual.md).
+  - Restos removidos a pedido do usuário: entradas `SoundSwitch` e `MIDI Mixer` em `HKCU\...\Run` e a
+    chave vazia `HKCU\Software\Bomers` (backup `.reg` em `%APPDATA%\sound-switch\backup-apps-antigos\`);
+    atalho `MidiTranslator.lnk` da pasta Inicializar, pastas do MIDI Mixer em `%APPDATA%`/`%LOCALAPPDATA%`
+    (~100 MB) e `Documentos\Bome's Midi Translator` foram para a Lixeira.
+  - Não mexidos (não eram dos 3 apps): `HKCU\Software\MidiKey2Key`, `C:\Users\carlo\speakers.ini`,
+    `HKCU\Software\mididash`.
 
 ## Fase 5 — Extras (só se fizer falta)
 

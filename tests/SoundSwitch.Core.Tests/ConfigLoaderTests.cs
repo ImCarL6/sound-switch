@@ -70,6 +70,20 @@ public class ConfigLoaderTests
     }
 
     [Fact]
+    public void SetStartWithWindows_altera_e_preserva_o_resto()
+    {
+        var json = """{ "midi": { "inputName": "BK492" }, "app": { "startWithWindows": true, "logLevel": "Debug" } }""";
+        var off = ConfigLoader.SetStartWithWindows(json, false);
+        Assert.NotNull(off);
+        var cfg = ConfigLoader.Parse(off!).Config!;
+        Assert.False(cfg.App.StartWithWindows);
+        Assert.Equal("Debug", cfg.App.LogLevel);
+        Assert.Equal("BK492", cfg.Midi.InputName);
+        Assert.Null(ConfigLoader.SetStartWithWindows(off!, false)); // sem mudança
+        Assert.True(ConfigLoader.Parse(ConfigLoader.SetStartWithWindows("{}", true)!).Config!.App.StartWithWindows);
+    }
+
+    [Fact]
     public void AddKnownId_acrescenta_uma_vez()
     {
         var json = """{ "devices": { "edifier": { "match": { "name": "EDIFIER" }, "knownIds": ["a"] } } }""";
