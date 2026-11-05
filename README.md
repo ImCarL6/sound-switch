@@ -12,7 +12,13 @@ substituindo três programas que hoje fazem esse trabalho juntos:
 **Status:** em uso diário. Os três faders e o botão de troca de saída funcionam, com overlay; o app está
 instalado, inicia com o Windows e substituiu MIDI Mixer, SoundSwitch e Bome (desinstalados).
 
-## Instalar / atualizar
+## Baixar
+
+Executável pronto (Windows 10/11 x64, sem .NET, sem admin) em
+[Releases](https://github.com/ImCarL6/sound-switch/releases/latest). Instruções de instalação e de
+config na página da release.
+
+## Instalar / atualizar a partir do código
 
 ```bash
 powershell -ExecutionPolicy Bypass -File scripts/publish.ps1
